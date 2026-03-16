@@ -99,6 +99,37 @@ jobs:
             extra-substituters = https://nix-cache.fossi-foundation.org
             extra-trusted-public-keys = nix-cache.fossi-foundation.org:3+K59iFwXqKsL7BNu6Guy0v+uTlwsxYQxjspXzqLYQs=
 
+      - name: Restore Nix store cache
+        uses: actions/cache/restore@v4
+        id: nix-cache
+        with:
+          path: /tmp/nix-cache
+          key: nix-store-${{ hashFiles('librelane/shell.nix', 'librelane/flake.lock') }}
+          restore-keys: nix-store-
+
+      - name: Import Nix store from cache
+        if: steps.nix-cache.outputs.cache-hit == 'true'
+        run: |
+          if [ -f /tmp/nix-cache/nix-store.nar ]; then
+            nix-store --import < /tmp/nix-cache/nix-store.nar || true
+          fi
+
+      - name: Warm Nix shell (download dependencies)
+        run: nix-shell $GITHUB_WORKSPACE/librelane/shell.nix --run "echo 'Nix shell ready'"
+
+      - name: Export Nix store to cache
+        if: steps.nix-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p /tmp/nix-cache
+          nix-store --export $(nix-store -qR $(nix-instantiate $GITHUB_WORKSPACE/librelane/shell.nix) 2>/dev/null | grep -v '\.drv$') > /tmp/nix-cache/nix-store.nar 2>/dev/null || true
+
+      - name: Save Nix store cache
+        if: steps.nix-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: /tmp/nix-cache
+          key: nix-store-${{ hashFiles('librelane/shell.nix', 'librelane/flake.lock') }}
+
       - name: Harden Chip ROM
         run: nix-shell $GITHUB_WORKSPACE/librelane/shell.nix --run "python -m librelane --pdk-root $PDK_ROOT --manual-pdk --pdk $PDK tt/rom/config.json"
 
