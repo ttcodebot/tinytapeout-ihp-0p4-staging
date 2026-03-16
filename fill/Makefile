@@ -49,7 +49,7 @@ $(FINAL_GDS): $(TMP_DIR)/step-fill2b.gds $(TMP_DIR)/step-fill1.gds | $(TMP_DIR)
 # Step 6: Run DRC check
 drc_report.log: $(FINAL_GDS)
 	$(KLAYOUT_CMD) -b -zz \
-		-r sg13g2_density.lydrc \
+		-r ${PDK_ROOT}/${PDK}/libs.tech/klayout/tech/drc/ihp-sg13cmos5l.drc \
 		-rd in_gds=$< \
 		-rd cell=tt_ihp_wrapper \
 		-rd report_file=drc_report.xml \

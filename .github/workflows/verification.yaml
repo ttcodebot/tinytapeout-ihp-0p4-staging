@@ -14,8 +14,8 @@ on:
 jobs:
   verification:
     env:
-      PDK_ROOT: ${{ github.workspace }}/IHP-Open-PDK
-      PDK: ihp-sg13g2
+      PDK_ROOT: ${{ github.workspace }}/pdk
+      PDK: ihp-sg13cmos5l
 
     # ubuntu
     runs-on: ubuntu-24.04

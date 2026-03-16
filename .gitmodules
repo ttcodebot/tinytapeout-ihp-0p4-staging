@@ -1,9 +1,11 @@
 [submodule "tt-multiplexer"]
 	path = tt-multiplexer
-	url = https://github.com/TinyTapeout/tt-multiplexer/
+	url = https://github.com/pindakaasbot/tt-multiplexer/
+	branch = cmos5l
 [submodule "tt"]
 	path = tt
-	url = https://github.com/TinyTapeout/tt-support-tools
+	url = https://github.com/pindakaasbot/tt-support-tools
+	branch = cmos5l
 [submodule "IHP-Open-PDK"]
 	path = IHP-Open-PDK
 	url = https://github.com/TinyTapeout/IHP-Open-PDK
