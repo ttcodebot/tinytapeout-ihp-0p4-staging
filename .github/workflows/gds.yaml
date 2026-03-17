@@ -104,12 +104,15 @@ jobs:
           nix-shell $GITHUB_WORKSPACE/librelane/shell.nix --run "python -m librelane --pdk-root $PDK_ROOT --manual-pdk --pdk $PDK --to KLayout.StreamOut tt/rom/config.json"
           # Generate LEF from ODB (Magic.WriteLEF hangs on cmos5l, use OpenROAD instead)
           ROM_RUN=$(ls -d tt/rom/runs/RUN_* | head -1)
-          nix-shell $GITHUB_WORKSPACE/librelane/shell.nix --run "openroad -no_init -exit <<OREOF
-            read_lef $PDK_ROOT/$PDK/libs.ref/sg13cmos5l_stdcell/lef/sg13cmos5l_tech.lef
-            read_lef $PDK_ROOT/$PDK/libs.ref/sg13cmos5l_stdcell/lef/sg13cmos5l_stdcell.lef
-            read_def $ROM_RUN/final/def/tt_um_chip_rom.def
-            write_abstract_lef $ROM_RUN/final/lef/tt_um_chip_rom.lef
-          OREOF"
+          mkdir -p $ROM_RUN/final/lef
+          cat > /tmp/gen_lef.tcl << 'TCLEOF'
+          read_lef [glob $::env(PDK_ROOT)/$::env(PDK)/libs.ref/sg13cmos5l_stdcell/lef/sg13cmos5l_tech.lef]
+          read_lef [glob $::env(PDK_ROOT)/$::env(PDK)/libs.ref/sg13cmos5l_stdcell/lef/sg13cmos5l_stdcell.lef]
+          set rom_run [lindex [glob tt/rom/runs/RUN_*] 0]
+          read_def $rom_run/final/def/tt_um_chip_rom.def
+          write_abstract_lef $rom_run/final/lef/tt_um_chip_rom.lef
+          TCLEOF
+          nix-shell $GITHUB_WORKSPACE/librelane/shell.nix --run "openroad -no_init -exit /tmp/gen_lef.tcl"
 
       - name: Harden tt_ctrl
         working-directory: tt-multiplexer/ol2/tt_ctrl
