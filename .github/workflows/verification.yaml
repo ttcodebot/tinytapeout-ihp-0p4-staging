@@ -25,6 +25,14 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Install ihp-sg13cmos5l PDK
+        run: |
+          set -euo pipefail
+          git clone --branch dev https://github.com/IHP-GmbH/IHP-Open-PDK.git "$PDK_ROOT"
+          git clone https://github.com/IHP-GmbH/ihp-sg13cmos5l.git "$PDK_ROOT/ihp-sg13cmos5l"
+          cd "$PDK_ROOT/ihp-sg13cmos5l"
+          git checkout ae7613984daf3ac2b14897321399df497278068f
+
       # Set Python up
       - name: setup python
         uses: actions/setup-python@v5
