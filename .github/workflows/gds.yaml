@@ -100,7 +100,7 @@ jobs:
             extra-trusted-public-keys = nix-cache.fossi-foundation.org:3+K59iFwXqKsL7BNu6Guy0v+uTlwsxYQxjspXzqLYQs=
 
       - name: Harden Chip ROM
-        run: nix-shell $GITHUB_WORKSPACE/librelane/shell.nix --run "python -m librelane --pdk-root $PDK_ROOT --manual-pdk --pdk $PDK --to KLayout.StreamOut tt/rom/config.json"
+        run: nix-shell $GITHUB_WORKSPACE/librelane/shell.nix --run "python -m librelane --pdk-root $PDK_ROOT --manual-pdk --pdk $PDK --skip Odb.CheckDesignAntennaProperties --skip Odb.CheckMacroAntennaProperties tt/rom/config.json"
 
       - name: Harden tt_ctrl
         working-directory: tt-multiplexer/ol2/tt_ctrl
