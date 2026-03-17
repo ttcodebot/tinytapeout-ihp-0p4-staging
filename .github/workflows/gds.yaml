@@ -100,7 +100,16 @@ jobs:
             extra-trusted-public-keys = nix-cache.fossi-foundation.org:3+K59iFwXqKsL7BNu6Guy0v+uTlwsxYQxjspXzqLYQs=
 
       - name: Harden Chip ROM
-        run: nix-shell $GITHUB_WORKSPACE/librelane/shell.nix --run "python -m librelane --pdk-root $PDK_ROOT --manual-pdk --pdk $PDK --skip Odb.CheckDesignAntennaProperties --skip Odb.CheckMacroAntennaProperties tt/rom/config.json"
+        run: |
+          nix-shell $GITHUB_WORKSPACE/librelane/shell.nix --run "python -m librelane --pdk-root $PDK_ROOT --manual-pdk --pdk $PDK --to KLayout.StreamOut tt/rom/config.json"
+          # Generate LEF from ODB (Magic.WriteLEF hangs on cmos5l, use OpenROAD instead)
+          ROM_RUN=$(ls -d tt/rom/runs/RUN_* | head -1)
+          nix-shell $GITHUB_WORKSPACE/librelane/shell.nix --run "openroad -no_init -exit <<OREOF
+            read_lef $PDK_ROOT/$PDK/libs.ref/sg13cmos5l_stdcell/lef/sg13cmos5l_tech.lef
+            read_lef $PDK_ROOT/$PDK/libs.ref/sg13cmos5l_stdcell/lef/sg13cmos5l_stdcell.lef
+            read_def $ROM_RUN/final/def/tt_um_chip_rom.def
+            write_abstract_lef $ROM_RUN/final/lef/tt_um_chip_rom.lef
+          OREOF"
 
       - name: Harden tt_ctrl
         working-directory: tt-multiplexer/ol2/tt_ctrl
