@@ -25,12 +25,13 @@ $(TMP_DIR)/step-fill1.gds: $(TMP_DIR)/step-simplify.gds | $(TMP_DIR)
 		-rd no_topmetal \
 		$<
 
-# Step 4: Fill Metal1-5, TopMetal1-2
+# Step 4: Fill Metal1-4 (cmos5l has no TopMetal fill macro)
 $(TMP_DIR)/step-fill2.gds: $(SRC) | $(TMP_DIR)
 	$(KLAYOUT_CMD) -b -zz \
 		-r ${PDK_ROOT}/${PDK}/libs.tech/klayout/tech/scripts/filler.py \
 		-rd output_file=$@ \
 		-rd no_activ \
+		-rd no_topmetal \
 		$<
 
 # Step 4b: Metal2 micro fill boost — adds 1.0x1.0 um fill cells in gaps
