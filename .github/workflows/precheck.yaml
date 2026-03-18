@@ -117,7 +117,12 @@ jobs:
             tinytapeout-submission/tt_ihp_wrapper_final.gds.lyrdb
             tinytapeout-submission/tt_ihp_wrapper_final.gds.log
 
+  # CMOS5L: density_check disabled — IHP shipped the cmos5l DRC deck (ihp-sg13cmos5l.drc)
+  # with all %include rule_decks/* commented out. No density rules execute, so the job
+  # always fails on the "Number of DRC errors: 0" grep. The mpw_precheck job above uses
+  # the TO_Sep2025 DRC deck which has working rules and passes.
   density_check:
+    if: false  # disabled until IHP ships cmos5l density rules
     env:
       PDK_ROOT: ${{ github.workspace }}/pdk
       PDK: ihp-sg13cmos5l
