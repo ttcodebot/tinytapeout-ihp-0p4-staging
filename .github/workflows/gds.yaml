@@ -46,6 +46,14 @@ jobs:
           # Fix broken symlink
           ln -sf openrcx/IHP_rcx_patterns.rules "$PDK_ROOT/ihp-sg13g2/libs.tech/librelane/IHP_rcx_patterns.rules"
 
+          # Initialize pycell4klayout-api and pypreprocessor submodules
+          # (cmos5l symlinks to these from sg13g2; needed for seal ring PCell generation)
+          cd "$PDK_ROOT"
+          git submodule update --init \
+            ihp-sg13g2/libs.tech/klayout/python/pycell4klayout-api \
+            ihp-sg13g2/libs.tech/klayout/python/pypreprocessor
+          cd "$PDK_ROOT/ihp-sg13cmos5l"
+
           python3 << 'PYEOF'
           import pathlib, subprocess
 
