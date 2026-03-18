@@ -145,7 +145,9 @@ Added the cmos5l PDK install step to `verification.yaml` so RTL simulation can f
 
 LVS was initially disabled alongside Magic but was re-enabled once we confirmed that `IHPExtractSpice` (gdstk-based, no Magic dependency) works with the fixed cmos5l layer stack. The flow now runs `IHPExtractSpice` → `Netgen.LVS`, producing a full LVS report.
 
-**Result:** Netgen reports "Device classes are equivalent". The only failures are top-level pin matching: the Verilog wrapper declares `pad_raw[63:0]` (64 pads) but the cmos5l layout has only 50 pads. `Checker.LVS` is deferred (not fatal) pending a fix to the wrapper's pad count.
+**Result:** Netgen reports 155 errors including "Netlists do not match" and "Top level cell failed pin matching". Most errors are due to the pin alignment bug (section 15) — mux-to-project signal pins are on different metal layers with no via connection in the GDS. The "Device classes are equivalent" verdict is misleading: Netgen forcibly altered pin lists to match. The `Checker.LVS` is deferred (non-fatal).
+
+**Key insight:** LVS correctly detected the mux-to-project disconnection. The SPICE extraction sees user project signal pins as singleton nets (fanout=1, completely floating). The 155 errors are real — they reflect the 12,480nm pin offset from the tile sizing bug.
 
 ### 14. Seal Ring Re-enablement
 
@@ -155,9 +157,17 @@ The seal ring was re-enabled by fixing three issues:
 2. **Standalone KLayout import:** `ihp_seal_ring.py` was updated to fall back to `import klayout.db as pya` when `import pya` fails (standalone mode vs. KLayout interpreter). A `pya.Logger` stub was added since `klayout.db` lacks the Logger class.
 3. **Flow step:** `IHPSealRing` re-enabled in `build.py` TopFlow.Steps.
 
+### 15. Tile Sizing Bug (CRITICAL — fix in progress)
+
+**All project tiles are 12,480nm too narrow.** The DEF templates and `tile_sizes.yaml` were copied from sg13g2 (which has power gating, subtracting 12,480nm for the power gate cell). With `no_power_gating: true` in cmos5l, the mux layout engine expects 214,560nm-wide blocks, but DEF templates declare 202,080nm. Every signal pin is misaligned by exactly 12,480nm in X.
+
+**Impact:** The `odb_route.py` custom routing creates Via3 connections in the ODB database at the expected pin positions, but the KLayout GDS streamout doesn't export these vias because the actual project pins are 12,480nm away. **All mux-to-project signals are electrically disconnected in the final GDS.** GL simulation passes because it uses the Verilog netlist (correct connectivity), masking the physical disconnect.
+
+**Fix:** Update `tile_sizes.yaml` and all 16 DEF templates to use the full 214,560nm width (per horizontal tile unit) and shift all pin X positions right by 12,480nm. All user projects must be rebuilt with the corrected templates.
+
 ## Known Limitations / Open Issues
 
-1. **Pin alignment mismatch (CRITICAL)** — Mux spine vertical layer is Metal3 but project pins are on Metal4. In sg13g2 these both used Metal4. The custom routing script (`odb_route.py`) adds Via3 connections at the interface, so signals are electrically connected through vias, but this is not the intended clean pin-to-pin alignment. **Fix under investigation:** change spine to vlayer=Metal4, hlayer=Metal3 (swapping the current assignment) so project pins and spine share Metal4.
+1. **Tile sizing / pin alignment (CRITICAL, fix in progress)** — DEF templates 12,480nm too narrow, causing complete mux-to-project signal disconnection in GDS. See section 15.
 2. **No IR drop analysis** — Power integrity not verified (`PSM-0069` connectivity failure without TopMetal2 power strapping)
 3. **No Magic DRC** — Only KLayout DRC available (and the cmos5l KLayout DRC deck has issues with batch-mode invocation)
 4. **Power strapping disabled** — `ModulePowerStrapper` and `PadRingPowerStrapper` designed for TopMetal2; need rework for TopMetal1-only power distribution
