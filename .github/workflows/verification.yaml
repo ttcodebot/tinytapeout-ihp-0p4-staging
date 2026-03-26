@@ -32,7 +32,7 @@ jobs:
           git clone --branch dev https://github.com/IHP-GmbH/IHP-Open-PDK.git "$PDK_ROOT"
           git clone https://github.com/IHP-GmbH/ihp-sg13cmos5l.git "$PDK_ROOT/ihp-sg13cmos5l"
           cd "$PDK_ROOT/ihp-sg13cmos5l"
-          git checkout 1178c4fac07974139cb991e54ccf38adf86be30c
+          git checkout ae7613984daf3ac2b14897321399df497278068f
 
       # Set Python up
       - name: setup python
