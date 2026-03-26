@@ -3,21 +3,17 @@ name: verification
 on:
   workflow_dispatch:
   push:
-    # Don't run on project submissions:
     branches-ignore:
       - projects/tt_um_*
   pull_request:
-    # Don't run on project submissions:
     paths-ignore:
       - projects/tt_um_*/**
 
 jobs:
   verification:
     env:
-      PDK_ROOT: ${{ github.workspace }}/IHP-Open-PDK
-      PDK: ihp-sg13g2
-
-    # ubuntu
+      PDK_ROOT: ${{ github.workspace }}/pdk
+      PDK: ihp-sg13cmos5l
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repo
@@ -25,7 +21,14 @@ jobs:
         with:
           submodules: recursive
 
-      # Set Python up
+      - name: Install ihp-sg13cmos5l PDK
+        run: |
+          set -euo pipefail
+          git clone --branch dev https://github.com/IHP-GmbH/IHP-Open-PDK.git "$PDK_ROOT"
+          git clone https://github.com/IHP-GmbH/ihp-sg13cmos5l.git "$PDK_ROOT/ihp-sg13cmos5l"
+          cd "$PDK_ROOT/ihp-sg13cmos5l"
+          git checkout ae7613984daf3ac2b14897321399df497278068f
+
       - name: setup python
         uses: actions/setup-python@v5
         with:
@@ -39,14 +42,12 @@ jobs:
       - name: Configure the multiplexer for testing
         run: python ./tt/configure.py --update-shuttle --test
 
-      # run first set of tests
       - name: Mux simulation
         working-directory: verilog/dv/mux
         env:
           EXPECTED_REPO: ${{ github.repository }}
         run: |
           make clean test_mux
-          # make will return success even if the test fails, so check for failure in the results.xml
           ! grep failure results.xml
 
       - name: upload RTL test results
