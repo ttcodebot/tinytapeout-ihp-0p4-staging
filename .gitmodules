@@ -11,5 +11,5 @@
 	url = https://github.com/TinyTapeout/IHP-Open-PDK
 [submodule "librelane"]
 	path = librelane
-	url = https://github.com/librelane/librelane
-	branch = 3.0.0
+	url = https://github.com/ttcodebot/librelane
+	branch = cmos5l
