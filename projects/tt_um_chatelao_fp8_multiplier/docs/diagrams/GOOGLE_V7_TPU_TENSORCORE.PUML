@@ -1,0 +1,62 @@
+@startuml GOOGLE_V7_TPU_TENSORCORE
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Google TPU v7 TensorCore - Hierarchy & Dataflow
+
+skinparam rectangle<<boundary>> {
+    FontSize 20
+}
+skinparam rectangle<<container_boundary>> {
+    FontSize 20
+}
+skinparam rectangle<<system_boundary>> {
+    FontSize 20
+}
+UpdateBoundaryStyle("container", $type="container")
+UpdateBoundaryStyle("system", $type="system")
+
+Container_Boundary(core, "Level 1: TPU v7 Core (TensorCore)") {
+    Component(hbm, "HBM Interface", "I/O", "High-bandwidth memory access")
+
+    Container_Boundary(mxu, "Level 2: Matrix Multiply Unit (MXU)") {
+        Component(mxu_ctrl, "MXU Control Logic", "Logic", "Sequencing & dataflow control")
+        Component(weight_sram, "Weight SRAM", "Storage", "Local buffer for stationary weights")
+
+        Container_Boundary(pe_array, "Level 3: PE Array (Systolic Grid)") {
+
+            Container_Boundary(pe, "Level 4: Processing Element (PE)") {
+                Component(decoder, "MX+ Decoder", "Logic", "Format decoding (MXFP4/6/8, MX+)")
+                Component(mul, "4x4/8x8 Multiplier", "Compute", "Mantissa multiplication")
+                Component(aligner, "Product Aligner", "Logic", "Exponent-based alignment")
+                Component(acc, "32-bit Local Accumulator", "Logic", "Partial sum accumulation")
+            }
+
+            Component(pe_right, "PE (Row i, Col j+1)", "PE", "Next neighbor in systolic row")
+            Component(pe_down, "PE (Row i+1, Col j)", "PE", "Next neighbor in systolic column")
+        }
+    }
+
+    Component(vpu, "Vector Processing Unit (VPU)", "Logic", "Vector operations & activation functions")
+}
+
+' Dataflow: Weights
+Rel_D(hbm, weight_sram, "Load Weights", "HBM to SRAM")
+Rel_D(weight_sram, decoder, "Stationary Weight (W_ij)", "Weight-stationary")
+
+' Dataflow: Activations
+Rel_D(mxu_ctrl, decoder, "Stream Activation (A_i)", "Activation streaming")
+Rel_R(decoder, mul, "Mantissa/Exp")
+Rel_R(decoder, pe_right, "Pass Activation", "Systolic row")
+
+' Dataflow: Partial Sums
+Rel_D(mul, aligner, "Product")
+Rel_D(aligner, acc, "Aligned Sum")
+Rel_D(mxu_ctrl, acc, "Input Partial Sum (Up)", "Initial row sum")
+Rel_D(acc, pe_down, "Reduced Partial Sum", "Systolic column")
+
+' Output to VPU
+Rel_D(acc, vpu, "Final Dot Product", "Accumulated dot product")
+
+@enduml

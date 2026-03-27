@@ -1,0 +1,79 @@
+# Concept: OPTIMIZE_FP4 - Minimal Silicon for FP4-Only Variant
+
+## 1. Introduction
+This concept outlines the strategy for optimizing the OCP MX MAC unit into a highly efficient, minimal-area FP4-only (E2M1) variant. By leveraging existing parameterization and introducing targeted pruning, we can reduce the silicon footprint by up to 68% compared to the multi-format baseline, while still maintaining the ability to build the full "Swiss Army Knife" unit for other use cases.
+
+## 2. Theoretical Efficiency Gains
+Using Yosys synthesis targets (Sky130/IHP SG13G2), we estimate the following savings when the unit is configured for FP4-only operation:
+
+| Component | Baseline (FP8/INT8) | FP4-Only Optimized | Area Reduction |
+|---|---|---|---|
+| **Multiplier Core** | ~824 Gates | ~180 Gates | **78%** |
+| **Product Aligner** | ~1541 Gates | ~850 Gates | **45%** |
+| **Total Unit** | **~5852 Gates** | **~1853 Gates** | **68%** |
+
+## 3. Targeted Optimizations for Minimal FP4 Silicon
+
+### 3.1. Fixed-Bit Extraction Decoders
+In the "FP4-only" configuration, the `decode_operand` task's complex `case` statement is pruned. The hardware simplifies to static bit-range extraction:
+- `sign = data[3]`
+- `exponent = data[2:1]`
+- `mantissa = data[0]`
+This eliminates approximately 200 gates of multiplexing and format-selection logic that would otherwise handle 7 different formats.
+
+### 3.2. 2x2 Significand Multiplier Scaling
+Standard FP8/INT8 requires an 8x8 integer multiplier to handle the 7-bit mantissas and 8-bit integers. For FP4 (E2M1), the significand (1.M) is only 2 bits wide.
+- A **2x2 multiplier** (producing a 4-bit product) is sufficient.
+- This is the single largest area saver, reducing the multiplier block by >600 gates.
+
+### 3.3. Pruned Exponent Arithmetic
+FP8 requires handling multiple biases (1, 3, 7, 15) and 5-bit exponents.
+- FP4-only uses a **fixed Bias 1** and 2-bit exponents.
+- The 6-bit exponent adder/subtractor path is replaced with a tiny **3-bit adder**, saving ~80 gates.
+
+### 3.4. Narrower Datapath (16-bit to 20-bit)
+While FP8 requires a 32-bit or 40-bit accumulator to maintain precision across 32 elements, many FP4-quantized LLM inference tasks are stable with 16-bit or 20-bit internal accumulation.
+- Reducing `ACCUMULATOR_WIDTH` to 20 bits and `ALIGNER_WIDTH` accordingly shaves hundreds of gates from the barrel shifter and the main accumulator register.
+
+## 4. Implementation Roadmap (5-Step Strategy)
+
+### Step 1: Aggressive Parameter-Driven Pruning (COMPLETED)
+- [x] **Action**: Audit all internal modules (`fp8_mul`, `fp8_aligner`, `project.v`) to ensure all non-FP4 logic is guarded by `SUPPORT_E5M2`, `SUPPORT_MXFP6`, and `SUPPORT_INT8` parameters.
+- [x] **Implementation**: All decoders and bias logic in `fp8_mul.v` are now guarded. `project.v` uses `generate` blocks to prune Lane 1, mixed-precision registers, and shared-scaling logic.
+- **Goal**: Allow the synthesizer to automatically remove all wide-format decoders and bias muxing when these flags are set to `0`.
+
+### Step 2: Adaptive Multiplier Scaling (COMPLETED)
+- [x] **Action**: Refactor the multiplier in `fp8_mul.v` to use a hierarchical structure that scales its bit-width based on the feature parameters.
+- [x] **Implementation**: Implemented 3-tier multiplier logic. For FP4-only builds, the logic simplifies to `p_res = (ma[3:2] * mb[3:2]) << 4`, which synthesizes to a minimal 2x2 significand multiplier.
+- **Goal**: Automatically instantiate a minimal 2x2 multiplier for FP4-only builds, while preserving 8x8 capability for multi-format builds.
+
+### Step 3: Minimal Exponent Path Refactoring (COMPLETED)
+- [x] **Action**: Parameterize the internal exponent bit-width and bias constants throughout the datapath.
+- [x] **Implementation**: Introduced `EXP_SUM_WIDTH` (default 7, scales down to 5 for FP4-only). Refactored `fp8_mul.v` to use `INTERNAL_EXP_WIDTH` and `INTERNAL_BIAS_WIDTH` based on enabled formats.
+- **Goal**: Shrink the exponent arithmetic logic from 6 bits to 3 bits when only narrow formats are enabled.
+
+### Step 4: Datapath Width Tuning (COMPLETED)
+- [x] **Action**: Conduct a sensitivity analysis to find the optimal `ALIGNER_WIDTH` and `ACCUMULATOR_WIDTH` for FP4 inference.
+- [x] **Implementation**: Added `ACCUMULATOR_WIDTH` and `ALIGNER_WIDTH` parameters to all modules. Verified that a 24-bit accumulator provides sufficient precision for standard FP4 workloads while fitting in a 1x1 tile.
+- **Goal**: Minimize the area of the barrel shifter and accumulation registers without compromising model accuracy (target: 20-bit accumulation).
+
+### Step 5: Protocol Short-Circuiting (COMPLETED)
+- [x] **Action**: Introduce a `SHORT_PROTOCOL` mode that skips Cycle 1 (Format Load) and reduces the streaming phase to 16 cycles (for $k=32$ blocks) by leveraging the "Packed Mode" natively.
+- [x] **Implementation**: Metadata registers (`format_a`, `round_mode`, `overflow_wrap`, `packed_mode`, `mx_plus_en`) are now captured from `uio_in` during Cycle 0 (IDLE) when `ui_in[7]` is high. This allows skipping the two configuration cycles.
+- **Goal**: Reduce total operation latency from 41 cycles to ~18 cycles, effectively doubling the unit's throughput-per-area.
+
+### Step 6: Control Logic & Register Pruning (COMPLETED)
+- [x] **Action**: Narrow the FSM counters and prune configuration registers that are constant in FP4-only builds.
+- [x] **Implementation**: Reduced `cycle_count` and `k_counter` to 7 bits. Used `generate` blocks in `src/project.v` to replace configuration registers with wires/localparams and provided a direct bit-extraction path in `src/fp8_mul.v` for FP4-only builds.
+- **Goal**: Eliminate ~150-200 gates of redundant control logic and registers in the most minimal configurations.
+
+### Step 7: Specialized FP4 Aligner (COMPLETED)
+- [x] **Action**: Create a hard-wired alignment path for FP4 that avoids the full 32-bit barrel shifter.
+- [x] **Implementation**: Implemented a specialized `gen_fp4_optimized` block in `src/fp8_aligner.v` triggered by a new `OPTIMIZE_FOR_FP4` parameter. This path uses a minimal datapath that bypasses rounding, sticky-bit logic, and complex saturation checks for FP4 element alignment.
+- **Goal**: Reduce the aligner area by an additional 30%.
+
+## 5. Backward Compatibility
+This optimization concept is designed as an extension of the existing parameterization. By setting `SUPPORT_E5M2=1`, `SUPPORT_MXFP6=1`, and `SUPPORT_INT8=1`, the unit remains the full OCP MX "Swiss Army Knife." Minimal silicon is achieved only when the user explicitly opts for the `FP4_ONLY` configuration by disabling the wider format flags.
+
+---
+*Concept developed for OCP MX-PLUS MAC project.*

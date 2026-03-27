@@ -1,0 +1,47 @@
+131. Printing statistics.
+
+=== tt_um_libormiller_SIMON_SPI ===
+
+        +----------Local Count, excluding submodules.
+        |        +-Local Area, excluding submodules.
+        |        | 
+     1687        - wires
+     1722        - wire bits
+      332        - public wires
+      367        - public wire bits
+        8        - ports
+       43        - port bits
+     1703 3.05E+04 cells
+       16  203.213   sg13cmos5l_a21o_1
+      169 1.53E+03   sg13cmos5l_a21oi_1
+        9  130.637   sg13cmos5l_a221oi_1
+       81  878.737   sg13cmos5l_a22oi_1
+       13  117.936   sg13cmos5l_and2_1
+        3   38.102   sg13cmos5l_and3_1
+        4   58.061   sg13cmos5l_and4_1
+        7   50.803   sg13cmos5l_buf_1
+      342 1.68E+04   sg13cmos5l_dfrbpq_1
+        1   18.144   sg13cmos5l_ebufn_2
+       94  511.661   sg13cmos5l_inv_1
+      146 2.65E+03   sg13cmos5l_mux2_1
+      139 1.01E+03   sg13cmos5l_nand2_1
+       43  390.096   sg13cmos5l_nand2b_1
+       24  217.728   sg13cmos5l_nand3_1
+        4   50.803   sg13cmos5l_nand3b_1
+        4   43.546   sg13cmos5l_nand4_1
+       77  558.835   sg13cmos5l_nor2_1
+        7   63.504   sg13cmos5l_nor2b_1
+       15   136.08   sg13cmos5l_nor3_1
+        6   65.318   sg13cmos5l_nor4_1
+      179 1.62E+03   sg13cmos5l_o21ai_1
+        5    45.36   sg13cmos5l_or2_1
+        3   38.102   sg13cmos5l_or3_1
+        1   14.515   sg13cmos5l_or4_1
+      142 1.03E+03   sg13cmos5l_tiehi
+       22  159.667   sg13cmos5l_tielo
+      117  1.7E+03   sg13cmos5l_xnor2_1
+       30  435.456   sg13cmos5l_xor2_1
+
+   Chip area for module '\tt_um_libormiller_SIMON_SPI': 30524.218200
+     of which used for sequential elements: 16754.169600 (54.89%)
+
