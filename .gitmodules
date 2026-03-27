@@ -1,15 +1,15 @@
 [submodule "tt-multiplexer"]
 	path = tt-multiplexer
-	url = https://github.com/pindakaasbot/tt-multiplexer/
-	branch = cmos5l
+	url = https://github.com/ttcodebot/tt-multiplexer/
+	branch = ihp-sg13cmos5l
 [submodule "tt"]
 	path = tt
-	url = https://github.com/pindakaasbot/tt-support-tools
-	branch = cmos5l
+	url = https://github.com/ttcodebot/tt-support-tools
+	branch = ihp-sg13cmos5l
 [submodule "IHP-Open-PDK"]
 	path = IHP-Open-PDK
 	url = https://github.com/TinyTapeout/IHP-Open-PDK
 [submodule "librelane"]
 	path = librelane
-	url = https://github.com/pindakaasbot/librelane
-	branch = cmos5l
+	url = https://github.com/ttcodebot/librelane
+	branch = ihp-sg13cmos5l
