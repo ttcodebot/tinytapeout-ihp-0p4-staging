@@ -1,0 +1,28 @@
+116. Printing statistics.
+
+=== tt_um_urish_sram_test ===
+
+        +----------Local Count, excluding submodules.
+        |        +-Local Area, excluding submodules.
+        |        | 
+       66        - wires
+      101        - wire bits
+       16        - public wires
+       51        - public wire bits
+        8        - ports
+       43        - port bits
+       75  752.976 cells
+        1        -   RM_IHPSG13_1P_1024x8_c2_bm_bist
+        4   36.288   sg13cmos5l_and2_1
+        4  195.955   sg13cmos5l_dfrbpq_1
+        1    5.443   sg13cmos5l_inv_1
+        4   72.576   sg13cmos5l_mux2_1
+        1    7.258   sg13cmos5l_nor2_1
+       13   94.349   sg13cmos5l_tiehi
+       47  341.107   sg13cmos5l_tielo
+
+   Area for cell type \RM_IHPSG13_1P_1024x8_c2_bm_bist is unknown!
+
+   Chip area for module '\tt_um_urish_sram_test': 752.976000
+     of which used for sequential elements: 195.955200 (26.02%)
+

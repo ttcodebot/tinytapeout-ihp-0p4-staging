@@ -1,0 +1,43 @@
+138. Printing statistics.
+
+=== tt_um_pwm_controller_atudoroi ===
+
+        +----------Local Count, excluding submodules.
+        |        +-Local Area, excluding submodules.
+        |        | 
+      839        - wires
+      874        - wire bits
+      185        - public wires
+      220        - public wire bits
+        8        - ports
+       43        - port bits
+      855 1.57E+04 cells
+        6   76.205   sg13cmos5l_a21o_1
+       37  335.664   sg13cmos5l_a21oi_1
+        8  116.122   sg13cmos5l_a221oi_1
+       11   99.792   sg13cmos5l_and2_1
+       10  127.008   sg13cmos5l_and3_1
+        8   58.061   sg13cmos5l_buf_1
+      177 8.67E+03   sg13cmos5l_dfrbpq_1
+        7   38.102   sg13cmos5l_inv_1
+       76 1.38E+03   sg13cmos5l_mux2_1
+       43  312.077   sg13cmos5l_nand2_1
+       20   181.44   sg13cmos5l_nand2b_1
+        5    45.36   sg13cmos5l_nand3_1
+        3   32.659   sg13cmos5l_nand4_1
+       44  319.334   sg13cmos5l_nor2_1
+       18  163.296   sg13cmos5l_nor2b_1
+        4   36.288   sg13cmos5l_nor3_1
+        1   10.886   sg13cmos5l_nor4_1
+       41  371.952   sg13cmos5l_o21ai_1
+       19  172.368   sg13cmos5l_or2_1
+        1   12.701   sg13cmos5l_or3_1
+        1   14.515   sg13cmos5l_or4_1
+      184 1.34E+03   sg13cmos5l_tiehi
+        9   65.318   sg13cmos5l_tielo
+       58  841.882   sg13cmos5l_xnor2_1
+       64  928.973   sg13cmos5l_xor2_1
+
+   Chip area for module '\tt_um_pwm_controller_atudoroi': 15745.363200
+     of which used for sequential elements: 8671.017600 (55.07%)
+
