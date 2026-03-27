@@ -128,7 +128,7 @@ jobs:
 
       - name: Harden tt_top
         working-directory: tt-multiplexer/ol2/tt_top
-        run: nix-shell $GITHUB_WORKSPACE/librelane/shell.nix --run "python build.py"
+        run: nix-shell $GITHUB_WORKSPACE/librelane/shell.nix --run "pip install gdstk && python build.py"
 
       - name: Copy final results
         run: python ./tt/configure.py --copy-final-results
