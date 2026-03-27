@@ -128,7 +128,9 @@ jobs:
 
       - name: Harden tt_top
         working-directory: tt-multiplexer/ol2/tt_top
-        run: nix-shell $GITHUB_WORKSPACE/librelane/shell.nix --run "python -m pip install --target /tmp/pylibs gdstk && export PYTHONPATH=/tmp/pylibs && python build.py"
+        run: |
+          SITE_PACKAGES=$(python -c "import site; print(site.getsitepackages()[0])")
+          nix-shell $GITHUB_WORKSPACE/librelane/shell.nix --run "export PYTHONPATH=$SITE_PACKAGES && python build.py"
 
       - name: Copy final results
         run: python ./tt/configure.py --copy-final-results
