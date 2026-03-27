@@ -200,6 +200,14 @@ jobs:
           # temporary workaround for missing bits in pad_raw:
           sed -i 's/inout \[49:0\] pad_raw/inout [63:0] pad_raw/' ../../../foundry_submission/verilog/gl/tt_ihp_wrapper.nl.v
 
+          # Fix cmos5l stdcell Verilog for iverilog: delayed_* signals are only driven
+          # by timing checks ($setuphold/$recrem) which iverilog doesn't support.
+          # Add direct assignments when FUNCTIONAL is defined.
+          STDCELL_V=$PDK_ROOT/ihp-sg13cmos5l/libs.ref/sg13cmos5l_stdcell/verilog/sg13cmos5l_stdcell.v
+          sed -i 's/wire delayed_D, delayed_RESET_B, delayed_CLK;/wire delayed_D, delayed_RESET_B, delayed_CLK;\n`ifdef FUNCTIONAL\nassign delayed_CLK = CLK; assign delayed_D = D; assign delayed_RESET_B = RESET_B;\n`endif/' "$STDCELL_V"
+          sed -i 's/wire delayed_D, delayed_SET_B, delayed_CLK;/wire delayed_D, delayed_SET_B, delayed_CLK;\n`ifdef FUNCTIONAL\nassign delayed_CLK = CLK; assign delayed_D = D; assign delayed_SET_B = SET_B;\n`endif/' "$STDCELL_V"
+          sed -i 's/wire delayed_D, delayed_CLK;/wire delayed_D, delayed_CLK;\n`ifdef FUNCTIONAL\nassign delayed_CLK = CLK; assign delayed_D = D;\n`endif/' "$STDCELL_V"
+
           make clean test_mux_gl
           # make will return success even if the test fails, so check for failure in the results.xml
           ! grep failure results.xml
