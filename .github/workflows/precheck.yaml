@@ -53,6 +53,7 @@ jobs:
           python3 ${{ env.PDK_ROOT }}/ihp-sg13cmos5l/libs.tech/klayout/tech/drc/run_drc.py \
             --path "gds/tt_ihp_wrapper_final.gds" \
             --run_dir drc_results \
+            --run_mode flat \
             --no_density --no_recommended --no_offgrid 2>&1 | tee tt_ihp_wrapper_final.gds.log
 
           # Find the merged DRC report
