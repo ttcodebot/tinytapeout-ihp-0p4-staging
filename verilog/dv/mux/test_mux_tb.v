@@ -29,16 +29,26 @@ module test_mux_tb (
   end
 `endif
 
-  wire [63:0] pad_raw;
+  wire [31:0] pad_raw;
+
+  // pad_raw[0..5] = ctl[0..5]
   assign pad_raw[0] = ctrl_ena;
   assign pad_raw[1] = ctrl_sel_inc;
   assign pad_raw[2] = ctrl_sel_rst_n;
-  assign uo_out = pad_raw[15:8];
-  assign pad_raw[39:32] = uio_in;
-  assign uio_out = pad_raw[39:32];
-  assign pad_raw[47:40] = ui_in;
-  assign pad_raw[48] = rst_n;
-  assign pad_raw[49] = clk;
+
+  // pad_raw[6..13] = uo[0..7]
+  assign uo_out = pad_raw[13:6];
+
+  // pad_raw[14..21] = uio[0..7]
+  assign pad_raw[21:14] = uio_in;
+  assign uio_out = pad_raw[21:14];
+
+  // pad_raw[22..29] = ui[0..7]
+  assign pad_raw[29:22] = ui_in;
+
+  // pad_raw[30] = rst_n, pad_raw[31] = clk
+  assign pad_raw[30] = rst_n;
+  assign pad_raw[31] = clk;
 
   tt_ihp_wrapper tt (.pad_raw(pad_raw));
 
