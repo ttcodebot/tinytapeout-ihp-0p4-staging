@@ -75,6 +75,15 @@ jobs:
       - name: Copy macros
         run: python ./tt/configure.py --copy-macros
 
+      - name: Patch project density (M2/M3 drawing-layer fill)
+        run: |
+          for gds in tt-multiplexer/ol2/tt_top/gds/tt_um_*.gds; do
+            if [ -f "$gds" ]; then
+              echo "Patching $gds"
+              python3 scripts/patch-project-density.py "$gds" "$gds"
+            fi
+          done
+
       - name: Patch tt_top build script to skip DRC
         run: |
           sed -i 's/^[[:space:]]*KLayout\.DRC,$/#&/' tt-multiplexer/ol2/tt_top/build.py
