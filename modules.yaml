@@ -1,8 +1,30 @@
 modules:
-  # Hard coded module locations - other modules will be assigned dynamically
   - name: chip_rom
     x: 5
     y: 9
   - name: factory_test
     x: 5
     y: 8
+  - name: spongent88
+    x: 0
+    y: 18
+    width: 2
+    height: 2
+  - name: snake_game
+    x: 2
+    y: 18
+    width: 2
+    height: 2
+  - name: lledoux_s3fdp_seqcomb
+    x: 4
+    y: 18
+    width: 2
+    height: 2
+  - name: miniMAC
+    x: 0
+    y: 16
+    height: 2
+  - name: prism_lite
+    x: 1
+    y: 16
+    height: 2
