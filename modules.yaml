@@ -1,8 +1,17 @@
 modules:
-  # Hard coded module locations - other modules will be assigned dynamically
   - name: chip_rom
     x: 5
     y: 9
   - name: factory_test
     x: 5
     y: 8
+  # Density fix: pin sparse projects into left-cluster violation region
+  - name: YannGuidon_TinyScanChain
+    x: 1
+    y: 5
+  - name: microlane_demo
+    x: 2
+    y: 5
+  - name: silicon_strummer
+    x: 3
+    y: 5

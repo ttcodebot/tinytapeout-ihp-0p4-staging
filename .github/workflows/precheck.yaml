@@ -33,8 +33,8 @@ jobs:
       - name: Install KLayout
         shell: bash
         run: |
-          wget https://github.com/TinyTapeout/klayout/releases/download/v0.29.11/klayout_0.29.11-1_amd64.deb
-          sudo apt-get update && sudo apt-get install -y ./klayout_0.29.11-1_amd64.deb
+          wget https://github.com/TinyTapeout/klayout/releases/download/v0.29.12/klayout_0.29.12-1_amd64.deb
+          sudo apt-get update && sudo apt-get install -y ./klayout_0.29.12-1_amd64.deb
 
       - name: Download artifact (run id = ${{ github.event.workflow_run.id }})
         uses: dawidd6/action-download-artifact@v6
@@ -106,8 +106,8 @@ jobs:
       - name: Install KLayout
         shell: bash
         run: |
-          wget https://github.com/TinyTapeout/klayout/releases/download/v0.29.11/klayout_0.29.11-1_amd64.deb
-          sudo apt-get update && sudo apt-get install -y ./klayout_0.29.11-1_amd64.deb
+          wget https://github.com/TinyTapeout/klayout/releases/download/v0.29.12/klayout_0.29.12-1_amd64.deb
+          sudo apt-get update && sudo apt-get install -y ./klayout_0.29.12-1_amd64.deb
 
       - name: Download artifact (run id = ${{ github.event.workflow_run.id }})
         uses: dawidd6/action-download-artifact@v6
