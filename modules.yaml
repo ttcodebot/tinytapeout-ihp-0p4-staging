@@ -1,8 +1,11 @@
 modules:
-  # Hard coded module locations - other modules will be assigned dynamically
   - name: chip_rom
     x: 5
     y: 9
   - name: factory_test
     x: 5
     y: 8
+  # Test: pin just one small project to a safe location
+  - name: spongent88
+    x: 0
+    y: 12
