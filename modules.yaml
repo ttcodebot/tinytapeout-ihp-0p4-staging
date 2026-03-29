@@ -1,8 +1,38 @@
 modules:
-  # Hard coded module locations - other modules will be assigned dynamically
   - name: chip_rom
     x: 5
     y: 9
   - name: factory_test
     x: 5
     y: 8
+  # 3x2 project
+  - name: lledoux_bf16_diminished_kulisch
+    x: 0
+    y: 18
+    width: 3
+    height: 2
+  # 1x2 projects (need even Y for downward expansion)
+  - name: prism_lite
+    x: 3
+    y: 18
+    height: 2
+  - name: htfab_rotfpga2
+    x: 4
+    y: 18
+    height: 2
+  - name: flummer_ltc
+    x: 5
+    y: 18
+    height: 2
+  - name: toivoh_demo
+    x: 0
+    y: 16
+    height: 2
+  - name: tinytapeout_logo_screensaver
+    x: 1
+    y: 16
+    height: 2
+  - name: miniMAC
+    x: 2
+    y: 16
+    height: 2
