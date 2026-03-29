@@ -43,8 +43,22 @@ $(TMP_DIR)/step-fill2b.gds: $(TMP_DIR)/step-fill2.gds | $(TMP_DIR)
 		-rd output_file=$@ \
 		$<
 
+# Step 4c: Metal3 micro fill boost
+$(TMP_DIR)/step-fill2c.gds: $(TMP_DIR)/step-fill2b.gds | $(TMP_DIR)
+	$(KLAYOUT_CMD) -b -zz \
+		-r ./ihp_fill_m3_boost.lym \
+		-rd output_file=$@ \
+		$<
+
+# Step 4d: Metal4 micro fill boost
+$(TMP_DIR)/step-fill2d.gds: $(TMP_DIR)/step-fill2c.gds | $(TMP_DIR)
+	$(KLAYOUT_CMD) -b -zz \
+		-r ./ihp_fill_m4_boost.lym \
+		-rd output_file=$@ \
+		$<
+
 # Step 5: Combine fills
-$(FINAL_GDS): $(TMP_DIR)/step-fill2b.gds $(TMP_DIR)/step-fill1.gds | $(TMP_DIR)
+$(FINAL_GDS): $(TMP_DIR)/step-fill2d.gds $(TMP_DIR)/step-fill1.gds | $(TMP_DIR)
 	./ihp_fill_combine.py $^ $@
 
 # Step 6: Run DRC check

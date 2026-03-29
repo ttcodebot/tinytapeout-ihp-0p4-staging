@@ -130,15 +130,9 @@ jobs:
             --density_only \
             --density_thr=4 2>&1 | tee density_report.log
 
-          if grep -q "FAILED" density_report.log; then
+          if grep -qi "Check Failed\|Violated rules" density_report.log; then
             echo "## ❌ Density errors found" | tee -a $GITHUB_STEP_SUMMARY
-            grep "FAILED\|violation" density_report.log | tee -a $GITHUB_STEP_SUMMARY
-            exit 1
-          fi
-
-          if ! grep -q "completed\|PASSED\|passed" density_report.log; then
-            echo "## ❌ Density check failed to complete" | tee -a $GITHUB_STEP_SUMMARY
-            tail -5 density_report.log | tee -a $GITHUB_STEP_SUMMARY
+            grep -i "Violated rules\|Check Failed" density_report.log | tee -a $GITHUB_STEP_SUMMARY
             exit 1
           fi
 

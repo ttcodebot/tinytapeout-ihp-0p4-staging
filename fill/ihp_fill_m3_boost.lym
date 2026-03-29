@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<klayout-macro>
+ <description>Fill Metal3 Micro Boost</description>
+ <version>0.1</version>
+ <category>filler</category>
+ <prolog/>
+ <epilog/>
+ <doc/>
+ <autorun>false</autorun>
+ <autorun-early>false</autorun-early>
+ <priority>0</priority>
+ <shortcut/>
+ <show-in-menu>false</show-in-menu>
+ <group-name/>
+ <menu-path/>
+ <interpreter>dsl</interpreter>
+ <dsl-interpreter-name>drc-dsl-xml</dsl-interpreter-name>
+ <text>
+	# Extra Metal3 micro fill pass — places 1.0 x 1.0 um fill cells with
+	# 0.42 um spacing (the DRC minimum per M3Fil.b) in gaps too narrow
+	# for the standard medium (4.0 x 4.0) or small (1.0 x 1.0 at 2.0 spacing) cells.
+
+	Metal3 = source.input("30/0")
+	Metal3_filler = source.input("30/22")
+	Metal3_nofill = source.input("30/23")
+	Metal3_slit = source.input("30/24")
+	TRANS = source.input("26/0")
+	EdgeSeal = source.input("39/0")
+
+	width_m3_xs = 1.0
+	height_m3_xs = 1.0
+	distance_m3_xs = 0.42
+
+	pattern_m3_xs = fill_pattern("Met3_XS_FILL_CELL").shape(30, 22, box(0.0, 0.0, width_m3_xs, height_m3_xs))
+
+	print("Filling M3 micro boost\n")
+	M3_excl = Metal3.dup
+	M3_excl.size(0.42, 0.42, "square_limit")
+	M3F_excl = Metal3_filler.dup
+	M3F_excl.size(0.42, 0.42, "square_limit")
+	M3D_excl = TRANS.dup
+	M3D_excl.size(1.0, 1.0, "square_limit")
+
+	M3Fil = EdgeSeal.holes - (M3_excl | M3F_excl | M3D_excl | Metal3_nofill | Metal3_slit | TRANS)
+	M3Fil.fill(pattern_m3_xs, hstep(width_m3_xs + distance_m3_xs), vstep(height_m3_xs + distance_m3_xs))
+
+	RBA::CellView.active.layout.write($output_file)
+ </text>
+</klayout-macro>
