@@ -1,8 +1,38 @@
 modules:
-  # Hard coded module locations - other modules will be assigned dynamically
   - name: chip_rom
     x: 5
     y: 9
   - name: factory_test
     x: 5
     y: 8
+  # 3x2 projects
+  - name: lledoux_bf16_diminished_kulisch
+    x: 0
+    y: 18
+    width: 3
+    height: 2
+  - name: 2048_vga_game
+    x: 3
+    y: 18
+    width: 3
+    height: 2
+  # 2x2 projects
+  - name: htfab_asicle2
+    x: 0
+    y: 16
+    width: 2
+    height: 2
+  - name: tinymoa_ihp0p4_16x16
+    x: 2
+    y: 16
+    width: 2
+    height: 2
+  # 1x2 projects
+  - name: flummer_ltc
+    x: 4
+    y: 16
+    height: 2
+  - name: prism_lite
+    x: 5
+    y: 16
+    height: 2
