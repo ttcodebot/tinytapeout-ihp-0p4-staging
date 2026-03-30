@@ -21,7 +21,7 @@ jobs:
       PDK_ROOT: ${{ github.workspace }}/IHP-Open-PDK
       TT_CONFIG: ihp-sg13cmos5l.yaml
       # Uncomment the following line to build only the specified projects:
-      #TT_ONLY_PROJECTS: tt_um_chip_rom,tt_um_factory_test
+      TT_ONLY_PROJECTS: tt_um_chip_rom,tt_um_factory_test
 
     runs-on: ubuntu-latest
     steps:

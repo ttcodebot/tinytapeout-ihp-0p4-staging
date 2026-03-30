@@ -127,6 +127,7 @@ jobs:
         run: |
           python3 $PDK_ROOT/ihp-sg13cmos5l/libs.tech/klayout/tech/drc/run_drc.py \
             --path=gds/tt_ihp_wrapper_final.gds \
+            --topcell=tt_ihp_wrapper \
             --density_only \
             --density_thr=4 2>&1 | tee density_report.log
 
